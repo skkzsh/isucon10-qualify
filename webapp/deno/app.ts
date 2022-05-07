@@ -1,10 +1,10 @@
 import { Application, Router, helpers } from "https://deno.land/x/oak@v6.5.1/mod.ts";
-import { Client } from "https://deno.land/x/mysql/mod.ts";
-import { sprintf } from "https://deno.land/std/fmt/printf.ts";
-import { organ } from "https://deno.land/x/organ/mod.ts";
-import { camelCase } from "https://deno.land/x/case/mod.ts";
-import { parse } from "https://deno.land/std/encoding/csv.ts";
-import { multiParser } from "https://deno.land/x/multiparser/mod.ts";
+import { Client } from "https://deno.land/x/mysql@v2.9.0/mod.ts";
+import { sprintf } from "https://deno.land/std@0.97.0/fmt/printf.ts";
+import { organ } from "https://deno.land/x/organ@1.1.1/mod.ts";
+import { camelCase } from "https://deno.land/x/case@2.1.1/mod.ts";
+import { parse } from "https://deno.land/std@0.97.0/encoding/csv.ts";
+import { multiParser } from "https://deno.land/x/multiparser@v2.1.0/mod.ts";
 
 const currentEnv = Deno.env.toObject();
 const decoder = new TextDecoder();
