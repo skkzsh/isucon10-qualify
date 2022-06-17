@@ -18,8 +18,9 @@ CREATE TABLE isuumo.estate
     door_width  INTEGER             NOT NULL,
     features    VARCHAR(64)         NOT NULL,
     popularity  INTEGER             NOT NULL,
-    INDEX idx (rent)
-    -- INDEX idx (latitude, longitude, popularity DESC)
+    INDEX rent_idx (rent) -- popularity
+    -- INDEX recommend_idx (door_height, door_width, popularity DESC)
+    -- INDEX nazotte_idx (latitude, longitude, popularity DESC)
 );
 
 CREATE TABLE isuumo.chair
@@ -37,5 +38,5 @@ CREATE TABLE isuumo.chair
     kind        VARCHAR(64)     NOT NULL,
     popularity  INTEGER         NOT NULL,
     stock       INTEGER         NOT NULL,
-    INDEX idx (price)
+    INDEX idx (price) -- popularity
 );
