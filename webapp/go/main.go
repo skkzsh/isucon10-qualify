@@ -313,7 +313,7 @@ func initialize(c echo.Context) error {
 	})
 }
 
-func getChairDetail(c echo.Context) error {
+func getChairDetail(c echo.Context) error { // FIXME: 高速化
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.Echo().Logger.Errorf("Request parameter \"id\" parse error : %v", err)
@@ -394,7 +394,7 @@ func postChair(c echo.Context) error {
 	return c.NoContent(http.StatusCreated)
 }
 
-func searchChairs(c echo.Context) error {
+func searchChairs(c echo.Context) error { // FIXME: 高速化
 	conditions := make([]string, 0)
 	params := make([]interface{}, 0)
 
@@ -602,7 +602,7 @@ func getLowPricedChair(c echo.Context) error {
 	return c.JSON(http.StatusOK, ChairListResponse{Chairs: chairs})
 }
 
-func getEstateDetail(c echo.Context) error {
+func getEstateDetail(c echo.Context) error { // FIXME: 高速化
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.Echo().Logger.Infof("Request parameter \"id\" parse error : %v", err)
@@ -691,7 +691,7 @@ func postEstate(c echo.Context) error {
 	return c.NoContent(http.StatusCreated)
 }
 
-func searchEstates(c echo.Context) error {
+func searchEstates(c echo.Context) error { // FIXME: 高速化
 	conditions := make([]string, 0)
 	params := make([]interface{}, 0)
 
@@ -850,7 +850,7 @@ func searchRecommendedEstateWithChair(c echo.Context) error {
 	return c.JSON(http.StatusOK, EstateListResponse{Estates: estates})
 }
 
-func searchEstateNazotte(c echo.Context) error {
+func searchEstateNazotte(c echo.Context) error { // FIXME: 高速化
 	coordinates := Coordinates{}
 	err := c.Bind(&coordinates)
 	if err != nil {
@@ -879,7 +879,7 @@ func searchEstateNazotte(c echo.Context) error {
 		validatedEstate := Estate{}
 
 		point := fmt.Sprintf("'POINT(%f %f)'", estate.Latitude, estate.Longitude)
-		query := fmt.Sprintf(`SELECT * FROM estate WHERE id = ? AND ST_Contains(ST_PolygonFromText(%s), ST_GeomFromText(%s))`, coordinates.coordinatesToText(), point)
+		query := fmt.Sprintf(`SELECT * FROM estate WHERE id = ? AND ST_Contains(ST_PolygonFromText(%s), ST_GeomFromText(%s))`, coordinates.coordinatesToText(), point) // FIXME
 		err = db.Get(&validatedEstate, query, estate.ID)
 		if err != nil {
 			if err == sql.ErrNoRows {
