@@ -3,6 +3,7 @@ image: fedora
 bench:
   before_script:
     - dnf -y install openssh-clients
+    - chmod 600 $SSH_SECRET_KEY
     - ssh isucon@153.125.130.181 -i $SSH_SECRET_KEY
     - sudo truncate -s 0 -c /var/log/nginx/access.log
     - sudo truncate -s 0 -c /var/log/mysql/slow.log
