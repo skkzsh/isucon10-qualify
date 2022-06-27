@@ -1,0 +1,22 @@
+image: fedora
+
+bench:
+  before_script:
+    - ssh ubuntu@153.125.130.181 -i $SSH_SECRET_KEY
+    - sudo su - isucon
+    - sudo truncate -s 0 -c /var/log/nginx/access.log
+    - sudo truncate -s 0 -c /var/log/mysql/slow.log
+    - cd /home/isucon/isuumo/webapp/go
+    - make
+    - sudo systemctl restart isuumo.go
+    - sudo systemctl restart mysql
+    - sudo systemctl restart nginx
+  script:
+    - cd ~/isuumo/bench
+    - ./bench -target-url http://127.0.0.1
+  after_script:
+    - sudo cat /var/log/nginx/access.log | alp json --sort avg -r -m '^/api/estate/[0-9]+$','^/api/estate/req_doc/[0-9]+$','^/api/chair/[0-9]+$','^/api/chair/buy/[0-9]+','^/api/recommended_estate/[0-9]+$','^/images/estate/[0-9a-f]+\.png$','^/images/chair/[0-9a-f]+\.png$'
+    - sudo pt-query-digest /var/log/mysql/slow.log
+  only:
+    - bench
+
