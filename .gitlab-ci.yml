@@ -2,8 +2,8 @@ image: fedora
 
 bench:
   before_script:
-    - ssh ubuntu@153.125.130.181 -i $SSH_SECRET_KEY
-    - sudo su - isucon
+    - dnf -y install openssh-clients
+    - ssh isucon@153.125.130.181 -i $SSH_SECRET_KEY
     - sudo truncate -s 0 -c /var/log/nginx/access.log
     - sudo truncate -s 0 -c /var/log/mysql/slow.log
     - cd /home/isucon/isuumo/webapp/go
