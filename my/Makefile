@@ -47,7 +47,7 @@ prepare:
 
 bench: prepare # truncate build restart
 	cd $(BENCH_DIR); \
-	$(BENCH_CMD) | \
+	$(BENCH_CMD) 2>&1 | \
 	tee ~/logs/bench-$(DATE).log
 
 alp: prepare
@@ -61,4 +61,5 @@ slp: prepare
 	| tee ~/logs/pt-query-digest-$(DATE).log
 
 issue: bench # alp slp
-	gh issue comment $(ISSUE) -F ~/logs/bench-$(DATE).log -F ~/logs/alp-$(DATE).log -F ~/logs/pt-query-digest-$(DATE).log
+	(cd $(APP_DIR); git rev-parse HEAD; cat ~/logs/bench-$(DATE).log) | \
+	gh issue comment $(ISSUE) -F- # ~/logs/alp-$(DATE).log ~/logs/pt-query-digest-$(DATE).log
