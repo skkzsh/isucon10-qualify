@@ -5,3 +5,8 @@
 
 node_modules
 bower_components
+
+bench/bench
+.bundle
+webapp/deno/isuumo
+
