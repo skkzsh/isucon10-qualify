@@ -65,7 +65,10 @@ slp: prepare
 
 issue:
 	(cd $(APP_DIR); git rev-parse HEAD; \
-	sudo cat ~/logs/bench-$(DATE).log ~/logs/alp-$(DATE).log ~/logs/pt-query-digest-$(DATE).log \
-	$(NGINX_ERROR_LOG).log $(MYSQL_ERROR_LOG).log) | \
+	echo "<details><summary>Bench</summary>"; echo "\n\`\`\`"; cat ~/logs/bench-$(DATE).log; echo "\`\`\`"; echo "</details>"; \
+	echo "<details><summary>alp</summary>"; echo "\n\`\`\`"; cat ~/logs/alp-$(DATE).log; echo "\`\`\`";  echo "</details>"; \
+	echo "<details><summary>Slow query</summary>"; echo "\n\`\`\`"; cat ~/logs/pt-query-digest-$(DATE).log; echo "\`\`\`";  echo "</details>"; \
+	echo "<details><summary>NGINX error</summary>"; echo "\n\`\`\`"; sudo cat $(NGINX_ERROR_LOG).log; echo "\`\`\`"; echo "</details>"; \
+	echo "<details><summary>MySQL error</summary>"; echo "\n\`\`\`"; sudo cat $(MYSQL_ERROR_LOG).log; echo "\`\`\`";  echo "</details>"; \
+	) | \
 	gh issue comment $(ISSUE) -F-
-
