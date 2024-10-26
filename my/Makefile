@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 NOW := $(shell date +%m%d-%H%M%S)
 DATE ?= $(NOW)
 
@@ -19,7 +21,7 @@ DB_MIDDLE ?= mysql
 SLOW_QUERY_LOG := /var/log/mysql/$(DB_MIDDLE)-slow
 MYSQL_ERROR_LOG := /var/log/mysql/error
 
-.PHONY: rotate truncate build restart prepare bench alp slp
+.PHONY: rotate truncate build restart prepare bench alp slp issue
 
 all: bench alp slp issue
 
@@ -44,14 +46,16 @@ restart:
 	sudo systemctl restart $(DB_MIDDLE)
 	sudo systemctl restart nginx
     # sudo systemctl restart memcached
+	# sudo systemctl restart newrelic-infra
 
 prepare:
 	mkdir -p ~/logs
 
 bench: prepare truncate build restart
 	cd $(BENCH_DIR); \
-	$(BENCH_CMD) 2>&1 | \
-	tee ~/logs/bench-$(DATE).log
+	$(BENCH_CMD) \
+	> >(tee ~/logs/bench-$(DATE).log) \
+	2> >(tee ~/logs/bench-error-$(DATE).log >&2)
 
 alp: prepare # avg, sum
 	sudo alp json --file $(NGINX_ACCESS_LOG).log \
@@ -65,10 +69,11 @@ slp: prepare
 
 issue:
 	(cd $(APP_DIR); git rev-parse HEAD; \
-	echo "<details><summary>Bench</summary>"; echo "\n\`\`\`"; cat ~/logs/bench-$(DATE).log; echo "\`\`\`"; echo "</details>"; \
-	echo "<details><summary>alp</summary>"; echo "\n\`\`\`"; cat ~/logs/alp-$(DATE).log; echo "\`\`\`";  echo "</details>"; \
-	echo "<details><summary>Slow query</summary>"; echo "\n\`\`\`"; cat ~/logs/pt-query-digest-$(DATE).log; echo "\`\`\`";  echo "</details>"; \
-	echo "<details><summary>NGINX error</summary>"; echo "\n\`\`\`"; sudo cat $(NGINX_ERROR_LOG).log; echo "\`\`\`"; echo "</details>"; \
-	echo "<details><summary>MySQL error</summary>"; echo "\n\`\`\`"; sudo cat $(MYSQL_ERROR_LOG).log; echo "\`\`\`";  echo "</details>"; \
+	echo "\`\`\`"; cat ~/logs/bench-$(DATE).log; echo "\`\`\`"; \
+	echo "<details><summary>Bench error</summary>"; echo -e "\n\`\`\`"; cat ~/logs/bench-error-$(DATE).log; echo "\`\`\`"; echo "</details>"; \
+	echo "<details><summary>alp</summary>"; echo -e "\n\`\`\`"; cat ~/logs/alp-$(DATE).log; echo "\`\`\`";  echo "</details>"; \
+	echo "<details><summary>Slow query</summary>"; echo -e "\n\`\`\`"; cat ~/logs/pt-query-digest-$(DATE).log; echo "\`\`\`";  echo "</details>"; \
+	echo "<details><summary>NGINX error</summary>"; echo -e "\n\`\`\`"; sudo cat $(NGINX_ERROR_LOG).log; echo "\`\`\`"; echo "</details>"; \
+	echo "<details><summary>MySQL error</summary>"; echo -e "\n\`\`\`"; sudo cat $(MYSQL_ERROR_LOG).log; echo "\`\`\`";  echo "</details>"; \
 	) | \
 	gh issue comment $(ISSUE) -F-
