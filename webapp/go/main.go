@@ -256,9 +256,9 @@ func main() {
 		newrelic.ConfigLicense(os.Getenv("NEW_RELIC_LICENSE_KEY")), // env.shに設定する
 		// newrelic.ConfigAppLogEnabled(false),
 		newrelic.ConfigAppLogForwardingEnabled(true),
-		// func(cfg *newrelic.Config) {
-		// 	cfg.DatastoreTracer.SlowQuery.Threshold = 0
-		// },
+		func(cfg *newrelic.Config) {
+			cfg.DatastoreTracer.SlowQuery.Threshold = 0
+		},
 	)
 	if err != nil {
 		fmt.Errorf("failed to init newrelic NewApplication reason: %v", err)
