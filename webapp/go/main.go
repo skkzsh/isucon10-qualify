@@ -5,6 +5,8 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"github.com/newrelic/go-agent/v3/integrations/nrecho-v3"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -57,7 +59,7 @@ type ChairListResponse struct {
 	Chairs []Chair `json:"chairs"`
 }
 
-//Estate 物件
+// Estate 物件
 type Estate struct {
 	ID          int64   `db:"id" json:"id"`
 	Thumbnail   string  `db:"thumbnail" json:"thumbnail"`
@@ -73,7 +75,7 @@ type Estate struct {
 	Popularity  int64   `db:"popularity" json:"-"`
 }
 
-//EstateSearchResponse estate/searchへのレスポンスの形式
+// EstateSearchResponse estate/searchへのレスポンスの形式
 type EstateSearchResponse struct {
 	Count   int64    `json:"count"`
 	Estates []Estate `json:"estates"`
@@ -216,7 +218,7 @@ func getEnv(key, defaultValue string) string {
 	return defaultValue
 }
 
-//ConnectDB isuumoデータベースに接続する
+// ConnectDB isuumoデータベースに接続する
 func (mc *MySQLConnectionEnv) ConnectDB() (*sqlx.DB, error) {
 	dsn := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v", mc.User, mc.Password, mc.Host, mc.Port, mc.DBName)
 	return sqlx.Open("mysql", dsn)
@@ -248,6 +250,23 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
+	// NewRelic
+	app, err := newrelic.NewApplication(
+		newrelic.ConfigAppName("isuumo"),
+		newrelic.ConfigLicense(os.Getenv("NEW_RELIC_LICENSE_KEY")), // env.shに設定する
+		// newrelic.ConfigAppLogEnabled(false),
+		newrelic.ConfigAppLogForwardingEnabled(true),
+		// func(cfg *newrelic.Config) {
+		// 	cfg.DatastoreTracer.SlowQuery.Threshold = 0
+		// },
+	)
+	if err != nil {
+		fmt.Errorf("failed to init newrelic NewApplication reason: %v", err)
+	} else {
+		fmt.Println("newrelic init success")
+	}
+	e.Use(nrecho.Middleware(app))
+
 	// Initialize
 	e.POST("/initialize", initialize)
 
@@ -271,7 +290,7 @@ func main() {
 
 	mySQLConnectionData = NewMySQLConnectionEnv()
 
-	var err error
+	// var err error
 	db, err = mySQLConnectionData.ConnectDB()
 	if err != nil {
 		e.Logger.Fatalf("DB connection failed : %v", err)
