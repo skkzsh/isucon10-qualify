@@ -19,12 +19,12 @@ CREATE TABLE isuumo.estate
     features    VARCHAR(64)         NOT NULL,
     popularity  INTEGER             NOT NULL,
     nega_popularity  INTEGER AS (-popularity) NOT NULL, -- MySQL 8でないと index desc が使えないため
-    location   POINT AS (POINT(latitude, longitude)) NOT NULL -- spatial index を貼るため
+    location   POINT AS (POINT(latitude, longitude)) STORED NOT NULL -- spatial index を貼るため
 );
 
 CREATE INDEX idx_rent_id ON isuumo.estate (rent, id);
 CREATE INDEX idx_nega_popularity_id ON isuumo.estate (nega_popularity ASC, id ASC);
--- CREATE SPATIAL INDEX idx_spatial ON isuumo.estate (location);
+CREATE SPATIAL INDEX idx_spatial ON isuumo.estate (location);
 
 CREATE TABLE isuumo.chair
 (
