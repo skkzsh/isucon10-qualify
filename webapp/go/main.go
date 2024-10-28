@@ -61,18 +61,19 @@ type ChairListResponse struct {
 
 // Estate 物件
 type Estate struct {
-	ID          int64   `db:"id" json:"id"`
-	Thumbnail   string  `db:"thumbnail" json:"thumbnail"`
-	Name        string  `db:"name" json:"name"`
-	Description string  `db:"description" json:"description"`
-	Latitude    float64 `db:"latitude" json:"latitude"`
-	Longitude   float64 `db:"longitude" json:"longitude"`
-	Address     string  `db:"address" json:"address"`
-	Rent        int64   `db:"rent" json:"rent"`
-	DoorHeight  int64   `db:"door_height" json:"doorHeight"`
-	DoorWidth   int64   `db:"door_width" json:"doorWidth"`
-	Features    string  `db:"features" json:"features"`
-	Popularity  int64   `db:"popularity" json:"-"`
+	ID             int64   `db:"id" json:"id"`
+	Thumbnail      string  `db:"thumbnail" json:"thumbnail"`
+	Name           string  `db:"name" json:"name"`
+	Description    string  `db:"description" json:"description"`
+	Latitude       float64 `db:"latitude" json:"latitude"`
+	Longitude      float64 `db:"longitude" json:"longitude"`
+	Address        string  `db:"address" json:"address"`
+	Rent           int64   `db:"rent" json:"rent"`
+	DoorHeight     int64   `db:"door_height" json:"doorHeight"`
+	DoorWidth      int64   `db:"door_width" json:"doorWidth"`
+	Features       string  `db:"features" json:"features"`
+	Popularity     int64   `db:"popularity" json:"-"`
+	NegaPopularity int64   `db:"nega_popularity" json:"-"` // FIXME
 }
 
 // EstateSearchResponse estate/searchへのレスポンスの形式
@@ -856,7 +857,7 @@ func searchRecommendedEstateWithChair(c echo.Context) error {
 	w := chair.Width
 	h := chair.Height
 	d := chair.Depth
-	query = `SELECT * FROM estate WHERE (door_width >= ? AND door_height >= ?) OR (door_width >= ? AND door_height >= ?) OR (door_width >= ? AND door_height >= ?) OR (door_width >= ? AND door_height >= ?) OR (door_width >= ? AND door_height >= ?) OR (door_width >= ? AND door_height >= ?) ORDER BY popularity DESC, id ASC LIMIT ?`
+	query = `SELECT * FROM estate WHERE (door_width >= ? AND door_height >= ?) OR (door_width >= ? AND door_height >= ?) OR (door_width >= ? AND door_height >= ?) OR (door_width >= ? AND door_height >= ?) OR (door_width >= ? AND door_height >= ?) OR (door_width >= ? AND door_height >= ?) ORDER BY nega_popularity ASC, id ASC LIMIT ?`
 	err = db.Select(&estates, query, w, h, w, d, h, w, h, d, d, w, d, h, Limit)
 	if err != nil {
 		if err == sql.ErrNoRows {

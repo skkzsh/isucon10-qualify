@@ -17,7 +17,8 @@ CREATE TABLE isuumo.estate
     door_height INTEGER             NOT NULL,
     door_width  INTEGER             NOT NULL,
     features    VARCHAR(64)         NOT NULL,
-    popularity  INTEGER             NOT NULL
+    popularity  INTEGER             NOT NULL,
+    nega_popularity  INTEGER AS (-popularity) NOT NULL -- MySQL 8でないと index desc が使えないため
 );
 
 CREATE INDEX idx_rent_id ON isuumo.estate (rent, id);
@@ -40,4 +41,3 @@ CREATE TABLE isuumo.chair
 );
 
 CREATE INDEX idx_price_id ON isuumo.chair (price, id);
-
