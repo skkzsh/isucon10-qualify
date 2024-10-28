@@ -74,6 +74,7 @@ type Estate struct {
 	Features       string  `db:"features" json:"features"`
 	Popularity     int64   `db:"popularity" json:"-"`
 	NegaPopularity int64   `db:"nega_popularity" json:"-"` // FIXME
+	Location       string  `db:"location" json:"-"`        // FIXME
 }
 
 // EstateSearchResponse estate/searchへのレスポンスの形式
@@ -913,7 +914,7 @@ func searchEstateNazotte(c echo.Context) error {
 	//	}
 	//}
 
-	query := fmt.Sprintf(`SELECT * FROM estate WHERE ST_Contains(ST_PolygonFromText(%s), ST_GeomFromText(CONCAT('POINT(', latitude, ' ', longitude, ')'))) ORDER BY nega_popularity ASC, id ASC`, coordinates.coordinatesToText())
+	query := fmt.Sprintf(`SELECT * FROM estate WHERE ST_Contains(ST_PolygonFromText(%s), location) ORDER BY nega_popularity ASC, id ASC`, coordinates.coordinatesToText())
 
 	err = db.Select(&estatesInPolygon, query)
 	if err != nil {
