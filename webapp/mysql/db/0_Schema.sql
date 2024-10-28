@@ -18,7 +18,7 @@ CREATE TABLE isuumo.estate
     door_width  INTEGER             NOT NULL,
     features    VARCHAR(64)         NOT NULL,
     popularity  INTEGER             NOT NULL,
-    nega_popularity  INTEGER AS (-popularity) NOT NULL, -- MySQL 8でないと index desc が使えないため
+    nega_popularity  INTEGER AS (-popularity) STORED NOT NULL, -- MySQL 8でないと index desc が使えないため
     location   POINT AS (POINT(latitude, longitude)) STORED NOT NULL -- spatial index を貼るため
 );
 
