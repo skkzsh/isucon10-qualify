@@ -108,4 +108,3 @@ max_allowed_packet = 32505856
 
 # innodb_buffer_pool_size = 6GB
 innodb_flush_method=O_DIRECT
-
