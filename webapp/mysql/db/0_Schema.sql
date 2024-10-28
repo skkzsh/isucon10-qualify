@@ -21,6 +21,7 @@ CREATE TABLE isuumo.estate
 );
 
 CREATE INDEX idx_rent_id ON isuumo.estate (rent, id);
+-- CREATE INDEX idx_door_width_height ON isuumo.estate (door_width, door_height);
 
 CREATE TABLE isuumo.chair
 (
