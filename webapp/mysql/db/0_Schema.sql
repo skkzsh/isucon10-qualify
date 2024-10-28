@@ -22,6 +22,7 @@ CREATE TABLE isuumo.estate
 );
 
 CREATE INDEX idx_rent_id ON isuumo.estate (rent, id);
+CREATE INDEX idx_nega_popularity_id ON isuumo.estate (nega_popularity ASC, id ASC);
 
 CREATE TABLE isuumo.chair
 (
