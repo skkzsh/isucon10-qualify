@@ -104,3 +104,8 @@ max_binlog_size   = 100M
 # ssl-cert=/etc/mysql/server-cert.pem
 # ssl-key=/etc/mysql/server-key.pem
 max_allowed_packet = 32505856
+
+
+# innodb_buffer_pool_size = 6GB
+innodb_flush_method=O_DIRECT
+
