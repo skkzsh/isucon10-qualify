@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -251,6 +252,10 @@ func main() {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+
+	e.Server.ReadTimeout = 10 * time.Second
+	e.Server.WriteTimeout = 10 * time.Second
+	e.Server.IdleTimeout = 120 * time.Second
 
 	// NewRelic
 	app, err := newrelic.NewApplication(
