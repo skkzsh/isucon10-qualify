@@ -13,6 +13,7 @@ import (
 	"github.com/newrelic/go-agent/v3/integrations/nrecho-v3"
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"os"
 	"os/exec"
@@ -303,9 +304,23 @@ func main() {
 	db.SetMaxOpenConns(10)
 	defer db.Close()
 
+	socketPath := "/tmp/echo.sock"
+
+	if _, err := os.Stat(socketPath); err == nil {
+		os.Remove(socketPath)
+	}
+
+	listener, err := net.Listen("unix", socketPath)
+	if err != nil {
+		log.Fatal("Listen error:", err)
+	}
+	defer listener.Close()
+
 	// Start server
-	serverPort := fmt.Sprintf(":%v", getEnv("SERVER_PORT", "1323"))
-	e.Logger.Fatal(e.Start(serverPort))
+	e.Listener = listener
+	e.Logger.Fatal(e.Start(""))
+	// serverPort := fmt.Sprintf(":%v", getEnv("SERVER_PORT", "1323"))
+	// e.Logger.Fatal(e.Start(serverPort))
 }
 
 func initialize(c echo.Context) error {
