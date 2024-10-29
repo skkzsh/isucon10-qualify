@@ -59,7 +59,7 @@ bench: prepare truncate build restart
 
 alp: prepare # avg, sum
 	sudo alp json --file $(NGINX_ACCESS_LOG).log \
-	$(ALP_OPTS) --sort avg -r \
+	$(ALP_OPTS) --sort sum -r \
 	-m $(ALP_MATCH) | \
 	tee ~/logs/alp-$(DATE).log
 
