@@ -316,6 +316,8 @@ func main() {
 	}
 	defer listener.Close()
 
+	os.Chmod(socketPath, 0777)
+
 	// Start server
 	e.Listener = listener
 	e.Logger.Fatal(e.Start(""))
