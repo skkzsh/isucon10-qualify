@@ -5,6 +5,11 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
+	"github.com/labstack/gommon/log"
 	"github.com/newrelic/go-agent/v3/integrations/nrecho-v3"
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"io/ioutil"
@@ -14,13 +19,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"time"
-
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/jmoiron/sqlx"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
-	"github.com/labstack/gommon/log"
 )
 
 const Limit = 20
@@ -253,9 +251,9 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.Server.ReadTimeout = 10 * time.Second
-	e.Server.WriteTimeout = 10 * time.Second
-	e.Server.IdleTimeout = 120 * time.Second
+	//e.Server.ReadTimeout = 10 * time.Second
+	//e.Server.WriteTimeout = 10 * time.Second
+	//e.Server.IdleTimeout = 120 * time.Second
 
 	// NewRelic
 	app, err := newrelic.NewApplication(
