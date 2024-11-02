@@ -73,8 +73,8 @@ query_cache_size        = 16M
 log_error = /var/log/mysql/error.log
 #
 # Here you can see queries with especially long duration
-slow_query_log         = 1
-slow_query_log_file    = /var/log/mysql/mysql-slow.log
+#slow_query_log         = 1
+#slow_query_log_file    = /var/log/mysql/mysql-slow.log
 long_query_time        = 0
 #log-queries-not-using-indexes
 #
@@ -108,3 +108,4 @@ max_allowed_packet = 32505856
 
 # innodb_buffer_pool_size = 6GB
 innodb_flush_method=O_DIRECT
+
