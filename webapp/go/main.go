@@ -10,6 +10,9 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
+	echotrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/labstack/echo"
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
+	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -241,6 +244,39 @@ func init() {
 }
 
 func main() {
+	const ServiceName = "isuumo"
+	const DatadogEnv = "isucon10q"
+
+	var err error
+	err = profiler.Start(
+		profiler.WithService(ServiceName), // DD_SERVICE
+		profiler.WithEnv(DatadogEnv),      // DD_ENV
+		// profiler.WithVersion("<APPLICATION_VERSION>"), // DD_VERSION
+		// profiler.WithTags("<KEY1>:<VALUE1>", "<KEY2>:<VALUE2>"),
+		profiler.WithProfileTypes(
+			profiler.CPUProfile,
+			profiler.HeapProfile,
+			// The profiles below are disabled by default to keep overhead
+			// low, but can be enabled as needed.
+
+			// profiler.BlockProfile,
+			// profiler.MutexProfile,
+			// profiler.GoroutineProfile,
+		),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer profiler.Stop()
+
+	tracer.Start(
+		tracer.WithService(ServiceName), // DD_SERVICE
+		tracer.WithEnv(DatadogEnv),      // DD_ENV
+		// tracer.WithServiceVersion("abc123"), // DD_VERSION
+		// tracer.WithRuntimeMetrics(),
+	)
+	defer tracer.Stop()
+
 	// Echo instance
 	e := echo.New()
 	// e.Debug = true
@@ -249,6 +285,8 @@ func main() {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+
+	e.Use(echotrace.Middleware(echotrace.WithServiceName(ServiceName)))
 
 	//e.Server.ReadTimeout = 10 * time.Second
 	//e.Server.WriteTimeout = 10 * time.Second
@@ -260,6 +298,7 @@ func main() {
 	//	newrelic.ConfigLicense(os.Getenv("NEW_RELIC_LICENSE_KEY")), // env.shに設定する
 	//	// newrelic.ConfigAppLogEnabled(false),
 	//	newrelic.ConfigAppLogForwardingEnabled(true),
+	//  newrelic.ConfigCodeLevelMetricsEnabled(true),
 	//	func(cfg *newrelic.Config) {
 	//		cfg.DatastoreTracer.SlowQuery.Threshold = 0
 	//	},
@@ -294,7 +333,7 @@ func main() {
 
 	mySQLConnectionData = NewMySQLConnectionEnv()
 
-	var err error
+	// var err error
 	db, err = mySQLConnectionData.ConnectDB()
 	if err != nil {
 		e.Logger.Fatalf("DB connection failed : %v", err)
