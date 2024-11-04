@@ -5,11 +5,14 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"github.com/go-sql-driver/mysql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
+	sqltrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/database/sql"
+	sqlxtrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/jmoiron/sqlx"
 	echotrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/labstack/echo"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
@@ -25,6 +28,9 @@ import (
 
 const Limit = 20
 const NazotteLimit = 50
+
+const ServiceName = "isuumo"
+const DatadogEnv = "isucon10q"
 
 var db *sqlx.DB
 var mySQLConnectionData *MySQLConnectionEnv
@@ -223,8 +229,9 @@ func getEnv(key, defaultValue string) string {
 
 // ConnectDB isuumoデータベースに接続する
 func (mc *MySQLConnectionEnv) ConnectDB() (*sqlx.DB, error) {
+	sqltrace.Register("mysql", &mysql.MySQLDriver{}, sqltrace.WithServiceName(ServiceName))
 	dsn := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?interpolateParams=true", mc.User, mc.Password, mc.Host, mc.Port, mc.DBName)
-	return sqlx.Open("mysql", dsn)
+	return sqlxtrace.Open("mysql", dsn)
 }
 
 func init() {
@@ -244,9 +251,6 @@ func init() {
 }
 
 func main() {
-	const ServiceName = "isuumo"
-	const DatadogEnv = "isucon10q"
-
 	var err error
 	err = profiler.Start(
 		profiler.WithService(ServiceName), // DD_SERVICE
