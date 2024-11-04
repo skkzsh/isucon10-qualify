@@ -10,8 +10,6 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
-	"github.com/newrelic/go-agent/v3/integrations/nrecho-v3"
-	"github.com/newrelic/go-agent/v3/newrelic"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -257,21 +255,21 @@ func main() {
 	//e.Server.IdleTimeout = 120 * time.Second
 
 	// NewRelic
-	app, err := newrelic.NewApplication(
-		newrelic.ConfigAppName("isuumo"),
-		newrelic.ConfigLicense(os.Getenv("NEW_RELIC_LICENSE_KEY")), // env.shに設定する
-		// newrelic.ConfigAppLogEnabled(false),
-		newrelic.ConfigAppLogForwardingEnabled(true),
-		func(cfg *newrelic.Config) {
-			cfg.DatastoreTracer.SlowQuery.Threshold = 0
-		},
-	)
-	if err != nil {
-		fmt.Errorf("failed to init newrelic NewApplication reason: %v", err)
-	} else {
-		fmt.Println("newrelic init success")
-	}
-	e.Use(nrecho.Middleware(app))
+	//app, err := newrelic.NewApplication(
+	//	newrelic.ConfigAppName("isuumo"),
+	//	newrelic.ConfigLicense(os.Getenv("NEW_RELIC_LICENSE_KEY")), // env.shに設定する
+	//	// newrelic.ConfigAppLogEnabled(false),
+	//	newrelic.ConfigAppLogForwardingEnabled(true),
+	//	func(cfg *newrelic.Config) {
+	//		cfg.DatastoreTracer.SlowQuery.Threshold = 0
+	//	},
+	//)
+	//if err != nil {
+	//	fmt.Errorf("failed to init newrelic NewApplication reason: %v", err)
+	//} else {
+	//	fmt.Println("newrelic init success")
+	//}
+	//e.Use(nrecho.Middleware(app))
 
 	// Initialize
 	e.POST("/initialize", initialize)
@@ -296,7 +294,7 @@ func main() {
 
 	mySQLConnectionData = NewMySQLConnectionEnv()
 
-	// var err error
+	var err error
 	db, err = mySQLConnectionData.ConnectDB()
 	if err != nil {
 		e.Logger.Fatalf("DB connection failed : %v", err)
