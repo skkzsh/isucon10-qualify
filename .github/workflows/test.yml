@@ -25,3 +25,18 @@ jobs:
 
       - run: make
         working-directory: webapp/go
+
+  sql:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - run: pip install sqlfluff
+
+      - run: sqlfluff lint 0_Schema.sql --dialect=mysql -e LT01,LT05,RF04
+        working-directory: webapp/mysql/db
