@@ -1,7 +1,10 @@
-name: test
+name: sql
 
 on:
   push:
+    paths:
+      - '**/*.sql'
+      - .github/workflows/sql.yml
   workflow_dispatch:
 
 permissions:
@@ -13,20 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  go:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: 'webapp/go/go.mod'
-
-      - run: make
-        working-directory: webapp/go
-
-  sql:
+  sqlfluff:
     runs-on: ubuntu-latest
 
     steps:
