@@ -2,7 +2,7 @@ module github.com/isucon/isucon10-qualify/isuumo
 
 go 1.22.0
 
-toolchain go1.22.8
+toolchain go1.22.9
 
 require (
 	github.com/go-sql-driver/mysql v1.6.0
